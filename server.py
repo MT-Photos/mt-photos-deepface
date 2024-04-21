@@ -7,6 +7,8 @@ import numpy as np
 import cv2
 import asyncio
 from deepface import DeepFace
+from PIL import Image
+from io import BytesIO
 
 on_linux = sys.platform.startswith('linux')
 
@@ -91,10 +93,28 @@ async def check_req(api_key: str = Depends(verify_header)):
 
 @app.post("/represent")
 async def process_image(file: UploadFile = File(...), api_key: str = Depends(verify_header)):
+    content_type = file.content_type
+
     image_bytes = await file.read()
     try:
-        nparr = np.frombuffer(image_bytes, np.uint8)
-        img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        img = None
+        if content_type == 'image/gif':
+            # Use Pillow to read the first frame of the GIF file
+            with Image.open(BytesIO(image_bytes)) as img:
+                if img.is_animated:
+                    img.seek(0)  # Seek to the first frame of the GIF
+                frame = img.convert('RGB')  # Convert to RGB mode
+                np_arr = np.array(frame)  # Convert to NumPy array
+                img = cv2.cvtColor(np_arr, cv2.COLOR_RGB2BGR)  # Convert RGB to BGR for OpenCV
+        if img is None:
+            # Use OpenCV for other image types
+            np_arr = np.frombuffer(image_bytes, np.uint8)
+            img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+        if img is None:
+            err = f"The uploaded file {file.filename} is not a valid image format or is corrupted."
+            print(err)
+            return {'result': [], 'msg': str(err)}
+
         height, width, _ = img.shape
         if width > 10000 or height > 10000:
             return {'result': [], 'msg': 'height or width out of range'}
