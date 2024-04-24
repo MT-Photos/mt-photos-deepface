@@ -9,6 +9,7 @@ import asyncio
 from deepface import DeepFace
 from PIL import Image
 from io import BytesIO
+from tensorflow.keras import utils
 
 on_linux = sys.platform.startswith('linux')
 
@@ -143,6 +144,7 @@ async def process_image(file: UploadFile = File(...), api_key: str = Depends(ver
         return {'result': [], 'msg': str(e)}
 
 def _represent(img):
+    utils.disable_interactive_logging()
     return DeepFace.represent(
         img_path=img,
         detector_backend=detector_backend,
@@ -155,9 +157,8 @@ async def predict(predict_func, img):
     return await asyncio.get_running_loop().run_in_executor(None, predict_func, img)
 
 def restart_program():
-    # 关闭重启逻辑
     python = sys.executable
-    # os.execl(python, python, *sys.argv)
+    os.execl(python, python, *sys.argv)
 
 
 if __name__ == "__main__":

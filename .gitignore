@@ -2,3 +2,4 @@
 *.iml
 .env
 /weights
+/__pycache__
