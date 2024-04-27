@@ -72,7 +72,7 @@ docker pull mtphotos/mt-photos-deepface:latest
 - 创建容器
 
 ```
-docker run -i -p 8066:8066 -e API_AUTH_KEY=mt_photos_ai_extra --name mt-photos-deepface mt-photos-deepface:latest
+docker run -i -p 8066:8066 -e API_AUTH_KEY=mt_photos_ai_extra --name mt-photos-deepface --restart="unless-stopped" mtphotos/mt-photos-deepface:latest
 ```
 
 
