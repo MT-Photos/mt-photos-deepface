@@ -78,12 +78,12 @@ async def verify_header(api_key: str = Header(...)):
 
 @app.get("/")
 async def top_info():
-    return {"title": "mt-photos 人脸识别", "link": "https://mtmt.tech/docs/advanced/facial_api"}
+    return {"title": "mt-photos 人脸识别API", "link": "https://mtmt.tech/docs/advanced/facial_api","detector_backend": detector_backend, "recognition_model": recognition_model}
 
 
 @app.post("/check")
 async def check_req(api_key: str = Depends(verify_header)):
-    return {'result': 'pass'}
+    return {'result': 'pass',"detector_backend": detector_backend, "recognition_model": recognition_model}
 
 
 @app.post("/restart")
