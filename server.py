@@ -11,6 +11,10 @@ from PIL import Image
 from io import BytesIO
 from tensorflow.keras import utils
 
+# 假设你的级联分类器文件名为 'haarcascade_frontalface_default.xml'
+cascade_path = '/models/haarcascade_frontalface_default.xml'
+face_cascade = cv2.CascadeClassifier(cascade_path)
+
 on_linux = sys.platform.startswith('linux')
 
 load_dotenv()
