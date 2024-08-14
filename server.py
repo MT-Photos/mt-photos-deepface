@@ -18,6 +18,13 @@ app = FastAPI()
 api_auth_key = os.getenv("API_AUTH_KEY", "mt_photos_ai_extra")
 http_port = int(os.getenv("HTTP_PORT", "8066"))
 
+# 获取级联分类器文件路径
+cascade_path = os.getenv("CASCADE_PATH", "models/haarcascade_frontalface_default.xml")
+# 加载级联分类器
+face_cascade = cv2.CascadeClassifier(cascade_path)
+# 确保face_cascade已正确加载
+if face_cascade.empty():
+    raise FileNotFoundError(f"未找到级联分类器文件，请检查CASCADE_PATH环境变量: {cascade_path}")
 
 inactive_task = None
 
